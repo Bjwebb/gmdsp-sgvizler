@@ -1,0 +1,57 @@
+<!--
+
+Added this line to src/parser.js
+                table[xsdns + "double"]    = 'number';
+
+-->
+<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script src="./sgvizler/sgvizler.pack.js"></script>
+<script type="text/javascript">sgvizler.prefix('npd', 'http://sws.ifi.uio.no/npd/');
+      sgvizler.prefix('npdv', 'http://sws.ifi.uio.no/vocab/npd#');
+            
+                $(document).ready(function() { sgvizler.containerDrawAll(); });
+                      </script>
+<div id="ex"
+   data-sgvizler-endpoint="http://data.gmdsp.org.uk/sparql.json"
+   data-sgvizler-query="
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX planning: <http://data.gmdsp.org.uk/def/council/planning/>
+PREFIX wgs84: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX sr: <http://data.ordnancesurvey.co.uk/ontology/spatialrelations/>
+
+SELECT DISTINCT ?lat ?long ?name ?text ?url
+WHERE {
+  ?url a <http://data.gmdsp.org.uk/def/council/planning/PlanningApplication>
+      ; planning:proposal ?text
+      ; planning:decision <http://data.gmdsp.org.uk/def/council/planning/planning-application-status/refuse>
+      ; planning:decisionDate ?d
+      ; planning:hasAddress ?site
+      ; rdfs:label ?name
+  . ?d rdfs:label ?decision_date 
+  . ?site wgs84:lat ?lat
+      ; wgs84:long ?long
+      ; sr:easting ?easting
+      ; sr:northing ?northing
+  #FILTER (?easting != '000000' && ?northing != '000000')
+  #FILTER (year(xsd:date(?decision_date)) = 2013)
+}
+    "
+   data-sgvizler-chart="sgvizler.visualization.Map"
+   style="width:100%; height:90%; border:1px solid black; display: inline-block;"></div>
+
+
+<!--
+<div id="sgvzl_example_query" 
+   data-sgvizler-endpoint="http://sws.ifi.uio.no/sparql/npd" 
+      data-sgvizler-query="SELECT * WHERE { [] a npdv:NCSProductionPeriod ; npdv:year ?year ; npdv:producedNetOilMillSm ?Oil_millSm ; npdv:producedNetGasBillSm ?Gas_billSm ; npdv:producedNetNGLMillSm3 ?NGL_millSm3 ; npdv:producedNetCondensateMillSm3 ?Condensate_millSm3 ; npdv:producedWaterMillSm3 ?Water_millSm3 ; FILTER (xsd:int(?year) &lt; 2011) } ORDER BY ?year" 
+         data-sgvizler-chart="google.visualization.ColumnChart" 
+            data-sgvizler-loglevel="2" 
+               style="width:800px; height:400px;"/>
+               -->
